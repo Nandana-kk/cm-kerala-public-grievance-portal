@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}CM Kerala – Chief Minister's Public Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<!-- HERO SECTION -->
+<section class="portal-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="hero-badge"><i class="bi bi-patch-check-fill me-1"></i> Transparent & Responsive Governance</span>
+                <h1 class="hero-title">Direct Public Redressal to the Chief Minister's Office</h1>
+                <p class="hero-subtitle">
+                    A dedicated, single-window online portal enabling citizens across Kerala to submit public grievances, receive unique tracking numbers, and monitor transparent government action across all departments.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('citizen.submit_grievance') }}" class="btn btn-gov-gold btn-lg shadow">
+                        <i class="bi bi-file-earmark-plus me-2"></i> Submit Grievance
+                    </a>
+                    <a href="{{ url_for('citizen.track') }}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-search me-2"></i> Track Grievance Status
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-block text-center">
+                <div class="p-4 bg-white bg-opacity-10 rounded-4 border border-warning border-opacity-50 shadow-lg text-start">
+                    <h5 class="text-warning fw-bold mb-3"><i class="bi bi-lightning-charge-fill me-2"></i>Quick Grievance Search</h5>
+                    <form action="{{ url_for('citizen.track') }}" method="GET">
+                        <div class="mb-3">
+                            <label class="form-label text-white small">Enter Reference Number:</label>
+                            <input type="text" name="ref" class="form-control form-control-sm" placeholder="e.g. KL-2026-PWD-8401" required>
+                        </div>
+                        <button type="submit" class="btn btn-gov-gold btn-sm w-100">
+                            <i class="bi bi-search me-1"></i> Check Real-Time Progress
+                        </button>
+                    </form>
+                    <hr class="border-light opacity-25 my-3">
+                    <p class="small text-light mb-0"><i class="bi bi-shield-lock me-1"></i> No login required for public reference number lookup.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- REAL-TIME STATISTICS CARDS (INTERACTIVE) -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- 1. Total Grievances: Show All Grievances -->
+            <div class="col-lg-3 col-sm-6">
+                <a href="{% if session.get('role') == 'admin' %}{{ url_for('admin.dashboard') }}{% else %}{{ url_for('citizen.track', status='all') }}{% endif %}" class="text-decoration-none d-block h-100" title="Click to view all grievances">
+                    <div class="stat-card h-100">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-number">{{ total_grievances }}</div>
+                                <div class="stat-label">Total Grievances</div>
+                            </div>
+                            <div class="stat-icon text-primary">
+                                <i class="bi bi-inbox-fill"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-top small text-primary fw-semibold d-flex align-items-center justify-content-between">
+                            <span>View all records</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 2. Successfully Resolved: Show Only Resolved Grievances -->
+            <div class="col-lg-3 col-sm-6">
+                <a href="{% if session.get('role') == 'admin' %}{{ url_for('admin.dashboard', status='Resolved') }}{% else %}{{ url_for('citizen.track', status='Resolved') }}{% endif %}" class="text-decoration-none d-block h-100" title="Click to view resolved grievances">
+                    <div class="stat-card h-100" style="border-top-color: #16a34a;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-number text-success">{{ resolved_grievances }}</div>
+                                <div class="stat-label">Successfully Resolved</div>
+                            </div>
+                            <div class="stat-icon text-success">
+                                <i class="bi bi-check-circle-fill"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-top small text-success fw-semibold d-flex align-items-center justify-content-between">
+                            <span>View resolved only</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 3. Action In Progress: Show Only In Progress Grievances -->
+            <div class="col-lg-3 col-sm-6">
+                <a href="{% if session.get('role') == 'admin' %}{{ url_for('admin.dashboard', status='In Progress') }}{% else %}{{ url_for('citizen.track', status='In Progress') }}{% endif %}" class="text-decoration-none d-block h-100" title="Click to view in-progress grievances">
+                    <div class="stat-card h-100" style="border-top-color: #0891b2;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-number text-info">{{ in_progress }}</div>
+                                <div class="stat-label">Action In Progress</div>
+                            </div>
+                            <div class="stat-icon text-info">
+                                <i class="bi bi-gear-wide-connected"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-top small text-info fw-semibold d-flex align-items-center justify-content-between">
+                            <span>View in progress only</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- 4. Integrated Departments -->
+            <div class="col-lg-3 col-sm-6">
+                <a href="{{ url_for('departments') }}" class="text-decoration-none d-block h-100" title="Click to view all government departments">
+                    <div class="stat-card h-100" style="border-top-color: var(--secondary-navy);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="stat-number">{{ departments_count }}</div>
+                                <div class="stat-label">Integrated Departments</div>
+                            </div>
+                            <div class="stat-icon text-dark">
+                                <i class="bi bi-building"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2 border-top small text-secondary fw-semibold d-flex align-items-center justify-content-between">
+                            <span>Explore departments</span>
+                            <i class="bi bi-arrow-right"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS OVERVIEW -->
+<section class="py-5 bg-white border-top border-bottom">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 mb-2">EASY 4-STEP PROCESS</span>
+            <h2 class="fw-bold text-dark">How Grievance Redressal Works</h2>
+            <p class="text-muted">A clear and accountable pathway from citizen submission to final resolution.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="workflow-step-card text-center">
+                    <div class="step-badge mx-auto">1</div>
+                    <h5 class="fw-bold text-dark">Submit Online</h5>
+                    <p class="text-muted small">Citizen provides complaint details and uploads supporting proof. Built-in Gemini AI assists in categorizing.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="workflow-step-card text-center">
+                    <div class="step-badge mx-auto">2</div>
+                    <h5 class="fw-bold text-dark">CMO Review</h5>
+                    <p class="text-muted small">Chief Minister's Office evaluates priority and assigns the grievance to the competent department officer.</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="workflow-step-card text-center">
+                    <div class="step-badge mx-auto">3</div>
+                    <h5 class="fw-bold text-dark">Field Action</h5>
+                    <p class="text-muted small">Designated department officer inspects, undertakes corrective action, and uploads an Action Taken Report (ATR).</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="workflow-step-card text-center">
+                    <div class="step-badge mx-auto">4</div>
+                    <h5 class="fw-bold text-dark">Redressal & Feedback</h5>
+                    <p class="text-muted small">CMO verifies the report, closes the grievance, and the citizen receives updates with an option to provide rating.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('how_it_works') }}" class="btn btn-gov-outline">
+                <i class="bi bi-arrow-right-circle me-1"></i> Read Complete 8-Stage Lifecycle
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURED DEPARTMENTS -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+                <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-2 mb-2">KEY GOVERNMENT BODIES</span>
+                <h2 class="fw-bold text-dark mb-1">Key Participating Departments</h2>
+                <p class="text-muted mb-0">Direct routing to executive authorities across all sectors.</p>
+            </div>
+            <a href="{{ url_for('departments') }}" class="btn btn-gov-outline btn-sm d-none d-sm-inline-block">View All Departments</a>
+        </div>
+
+        <div class="row g-4">
+            {% for dept in featured_departments %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="portal-card h-100 p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="emblem-icon me-3" style="width: 40px; height: 40px; font-size: 1.1rem;">
+                                <i class="bi bi-bank"></i>
+                            </div>
+                            <h5 class="fw-bold mb-0 text-dark">{{ dept.department_name }}</h5>
+                        </div>
+                        <p class="text-muted small mb-3">{{ dept.description }}</p>
+                        <a href="{{ url_for('citizen.submit_grievance') }}" class="btn btn-sm btn-link text-success p-0 fw-bold">
+                            Submit Grievance to this Dept <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CITIZEN ASSISTANCE CALLOUT -->
+<section class="py-5 bg-light border-top">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <h3 class="fw-bold text-dark">Have an unresolved grievance or need assistance?</h3>
+                <p class="text-muted mb-0">Our citizen support center is available to clarify procedure, explain tracking updates, and accept general public enquiries.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="{{ url_for('contact') }}" class="btn btn-gov-secondary btn-lg">
+                    <i class="bi bi-envelope-paper me-2"></i> Contact Public Cell
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

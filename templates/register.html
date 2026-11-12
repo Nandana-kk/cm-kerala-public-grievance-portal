@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Citizen Registration – CM Kerala Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="portal-card shadow-lg border-0">
+                <div class="portal-card-header green-header text-center py-4">
+                    <div class="emblem-icon mx-auto mb-2" style="width: 50px; height: 50px;">
+                        <i class="bi bi-person-plus"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1 text-white">Citizen Account Registration</h4>
+                    <p class="small text-light opacity-75 mb-0">Create an account to submit grievances and track redressal progress</p>
+                </div>
+
+                <div class="portal-card-body p-4">
+                    <form method="POST" action="{{ url_for('auth.register') }}">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ name or '' }}" placeholder="Enter your full name" required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" placeholder="name@example.com" required>
+                            </div>
+                            <div class="form-text">Used for receiving official complaint updates and login.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="mobile" class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light">+91</span>
+                                <input type="tel" class="form-control" id="mobile" name="mobile" value="{{ mobile or '' }}" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Min. 6 characters" minlength="6" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="confirm_password" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="bi bi-check2-circle"></i></span>
+                                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Re-enter password" minlength="6" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-gov-primary btn-lg">
+                                <i class="bi bi-check-circle me-2"></i> Complete Registration
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <span class="text-muted small">Already registered? </span>
+                            <a href="{{ url_for('auth.login') }}" class="small fw-bold text-success">Sign in to your account</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

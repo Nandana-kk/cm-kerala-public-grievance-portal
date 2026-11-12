@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Grievance – CM Kerala Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="portal-card shadow-sm">
+                <div class="portal-card-header green-header">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-white"><i class="bi bi-pencil-square me-2"></i> Public Grievance Submission</h4>
+                        <p class="small text-light opacity-75 mb-0">Fill in the complaint details below. Our Gemini AI Assistant will help categorize your issue.</p>
+                    </div>
+                </div>
+
+                <div class="portal-card-body p-4">
+                    <form method="POST" action="{{ url_for('citizen.submit_grievance') }}" enctype="multipart/form-data" id="grievanceForm">
+                        
+                        <!-- DISTRICT & CATEGORY ROW -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label for="district" class="form-label">Kerala District <span class="text-danger">*</span></label>
+                                <select class="form-select" id="district" name="district" required>
+                                    <option value="">-- Select District --</option>
+                                    {% for d in districts %}
+                                        <option value="{{ d }}" {% if district == d %}selected{% endif %}>{{ d }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Grievance Category <span class="text-danger">*</span></label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="">-- Select Category --</option>
+                                    {% for c in categories %}
+                                        <option value="{{ c }}" {% if category == c %}selected{% endif %}>{{ c }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SUBJECT -->
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Grievance Subject <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="subject" name="subject" value="{{ subject or '' }}" placeholder="Clear, concise summary of the issue (min 10 characters)" minlength="10" required>
+                        </div>
+
+                        <!-- DESCRIPTION -->
+                        <div class="mb-2">
+                            <label for="description" class="form-label">Detailed Description of Grievance <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="description" name="description" rows="5" placeholder="Describe the location, nature of the problem, duration, and how it impacts citizens (min 20 characters)..." minlength="20" required>{{ description or '' }}</textarea>
+                            <div class="form-text">Provide exact landmarks, roads, or institutions involved for quick field verification.</div>
+                        </div>
+
+                        <!-- AI ASSISTANT TRIGGER BUTTON -->
+                        <div class="mb-4 d-flex align-items-center justify-content-between pt-1">
+                            <button type="button" class="btn btn-gov-gold btn-sm" id="btn-analyze-ai">
+                                <i class="bi bi-robot me-1"></i> Analyze with Gemini AI Assistant
+                            </button>
+                            <small class="text-muted"><i class="bi bi-stars text-warning me-1"></i> AI suggests department, priority & summary</small>
+                        </div>
+
+                        <!-- AI ASSISTANT RESULTS CONTAINER (Initially Hidden) -->
+                        <div id="ai-analysis-container" class="ai-assistant-box d-none mb-4">
+                            <div class="ai-assistant-header">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="ai-badge"><i class="bi bi-robot me-1"></i> Gemini AI Grievance Assistant</span>
+                                    <span id="ai-source-badge" class="badge bg-success">Google Gemini</span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-success" id="btn-apply-ai">
+                                    <i class="bi bi-check-all me-1"></i> Apply Suggestions to Form
+                                </button>
+                            </div>
+
+                            <!-- Spinner -->
+                            <div id="ai-spinner" class="text-center py-3 d-none">
+                                <div class="spinner-border text-success" role="status">
+                                    <span class="visually-hidden">Analyzing grievance...</span>
+                                </div>
+                                <p class="small text-muted mt-2 mb-0">Consulting Gemini AI model for department categorization...</p>
+                            </div>
+
+                            <!-- Error Message -->
+                            <div id="ai-error" class="alert alert-danger py-2 small d-none mb-2"></div>
+
+                            <!-- Analysis Details -->
+                            <div id="ai-results" class="d-none">
+                                <!-- Duplicate warning alert if detected -->
+                                <div id="ai-duplicate-warning" class="alert alert-warning py-2 small d-none mb-2"></div>
+
+                                <div class="row g-2 mb-2">
+                                    <div class="col-md-4">
+                                        <div class="ai-recommendation-item">
+                                            <span class="text-muted small d-block">Suggested Department:</span>
+                                            <strong id="ai-suggested-dept" class="text-dark">--</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="ai-recommendation-item">
+                                            <span class="text-muted small d-block">Suggested Category:</span>
+                                            <strong id="ai-suggested-cat" class="text-dark">--</strong>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="ai-recommendation-item">
+                                            <span class="text-muted small d-block">Recommended Priority:</span>
+                                            <span id="ai-suggested-priority" class="badge bg-warning text-dark">Medium</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="ai-recommendation-item mb-2">
+                                    <span class="text-muted small d-block">CMO Executive Summary:</span>
+                                    <span id="ai-summary-text" class="text-dark small">--</span>
+                                </div>
+
+                                <div class="ai-recommendation-item">
+                                    <span class="text-muted small d-block">AI Recommendation Rationale:</span>
+                                    <span id="ai-reason-text" class="text-muted small">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HIDDEN FIELDS FOR AI RECOMMENDATIONS -->
+                        <input type="hidden" name="ai_summary" id="hidden_ai_summary" value="">
+                        <input type="hidden" name="ai_suggested_department" id="hidden_ai_dept" value="">
+                        <input type="hidden" name="ai_suggested_category" id="hidden_ai_cat" value="">
+                        <input type="hidden" name="ai_suggested_priority" id="hidden_ai_priority" value="">
+
+                        <!-- DEPARTMENT & PRIORITY OVERRIDE ROW -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="department_id" class="form-label">Preferred Department (Optional)</label>
+                                <select class="form-select" id="department_id" name="department_id">
+                                    <option value="">-- Let CMO / AI Route Automatically --</option>
+                                    {% for dept in departments %}
+                                        <option value="{{ dept.department_id }}">{{ dept.department_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="form-text">CMO administrators will confirm or reassign during review.</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="priority" class="form-label">Citizen Urgency Assessment</label>
+                                <select class="form-select" id="priority" name="priority">
+                                    <option value="Low">Low – Routine civic or maintenance issue</option>
+                                    <option value="Medium" selected>Medium – Significant disruption to local area</option>
+                                    <option value="High">High – Public safety hazard or emergency concern</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- ATTACHMENT UPLOAD -->
+                        <div class="mb-4">
+                            <label for="attachment" class="form-label">Supporting Evidence / Photos (Optional)</label>
+                            <input class="form-control" type="file" id="attachment" name="attachment" accept=".png,.jpg,.jpeg,.pdf,.doc,.docx">
+                            <div class="form-text">Accepted formats: PNG, JPG, JPEG, PDF, DOC, DOCX. Maximum file size: 10 MB.</div>
+                        </div>
+
+                        <!-- SUBMIT BUTTONS -->
+                        <div class="d-flex justify-content-between align-items-center pt-3 border-top">
+                            <a href="{{ url_for('citizen.dashboard') }}" class="btn btn-outline-secondary">
+                                <i class="bi bi-x-circle me-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-gov-primary btn-lg shadow-sm">
+                                <i class="bi bi-send-check me-2"></i> Submit Grievance
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

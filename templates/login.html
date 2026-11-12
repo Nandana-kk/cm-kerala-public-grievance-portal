@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In – CM Kerala Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-8">
+            <div class="portal-card shadow-lg border-0">
+                <div class="portal-card-header green-header text-center py-4">
+                    <div class="emblem-icon mx-auto mb-2" style="width: 50px; height: 50px;">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1 text-white">Portal Sign In</h4>
+                    <p class="small text-light opacity-75 mb-0">Single sign-in for Citizens, CMO, and Department Officers</p>
+                </div>
+
+                <div class="portal-card-body p-4">
+                    <form method="POST" action="{{ url_for('auth.login') }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" placeholder="name@domain.com" required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-gov-primary btn-lg">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Sign In to Portal
+                            </button>
+                        </div>
+
+                        <div class="text-center">
+                            <span class="text-muted small">New citizen? </span>
+                            <a href="{{ url_for('auth.register') }}" class="small fw-bold text-success">Register an account</a>
+                        </div>
+                    </form>
+
+                    <!-- EVALUATOR DEMO CREDENTIALS QUICK-FILL BOX -->
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="small fw-bold text-dark"><i class="bi bi-person-badge-fill text-warning me-1"></i> Demo Evaluation Accounts</span>
+                            <span class="badge bg-secondary" style="font-size: 0.7rem;">Click to Auto-fill</span>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-sm btn-outline-secondary w-100 text-start" onclick="fillCredentials('admin@cmkerala.gov.in', 'Admin@123')">
+                                    <div class="fw-bold small text-dark"><i class="bi bi-shield-shaded text-danger"></i> CMO Admin</div>
+                                    <div class="text-muted" style="font-size: 0.72rem;">admin@cmkerala.gov.in</div>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-sm btn-outline-secondary w-100 text-start" onclick="fillCredentials('officer.pwd@kerala.gov.in', 'Officer@123')">
+                                    <div class="fw-bold small text-dark"><i class="bi bi-briefcase text-primary"></i> PWD Officer</div>
+                                    <div class="text-muted" style="font-size: 0.72rem;">officer.pwd@kerala.gov.in</div>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-sm btn-outline-secondary w-100 text-start" onclick="fillCredentials('officer.health@kerala.gov.in', 'Officer@123')">
+                                    <div class="fw-bold small text-dark"><i class="bi bi-heart-pulse text-info"></i> Health Officer</div>
+                                    <div class="text-muted" style="font-size: 0.72rem;">officer.health@kerala.gov.in</div>
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-sm btn-outline-secondary w-100 text-start" onclick="fillCredentials('sujith.citizen@example.com', 'Citizen@123')">
+                                    <div class="fw-bold small text-dark"><i class="bi bi-person text-success"></i> Citizen Account</div>
+                                    <div class="text-muted" style="font-size: 0.72rem;">sujith.citizen@example.com</div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function fillCredentials(email, password) {
+    document.getElementById("email").value = email;
+    document.getElementById("password").value = password;
+}
+</script>
+{% endblock %}

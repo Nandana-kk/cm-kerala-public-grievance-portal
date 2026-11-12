@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Government Departments – CM Kerala Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 mb-2">PARTICIPATING AUTHORITIES</span>
+        <h1 class="fw-bold text-dark">Integrated Government Departments</h1>
+        <p class="text-muted lead">The portal directly links with key administrative departments across the Government of Kerala.</p>
+    </div>
+
+    <div class="row g-4">
+        {% for dept in departments %}
+            <div class="col-lg-4 col-md-6">
+                <div class="portal-card h-100 p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="emblem-icon me-3">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-0 text-dark">{{ dept.department_name }}</h5>
+                                <span class="badge bg-light text-muted border mt-1">Dept ID: #{{ dept.department_id }}</span>
+                            </div>
+                        </div>
+                        <p class="text-muted small">{{ dept.description }}</p>
+                    </div>
+
+                    <div class="pt-3 border-top mt-3 d-flex justify-content-between align-items-center">
+                        <span class="small text-success fw-bold"><i class="bi bi-check-circle me-1"></i>Active Redressal</span>
+                        <a href="{{ url_for('citizen.submit_grievance') }}" class="btn btn-sm btn-gov-primary">
+                            Submit Grievance
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Department Triage Help -->
+    <div class="portal-card p-4 mt-5 bg-white border-top border-4 border-success">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h5 class="fw-bold text-dark mb-1"><i class="bi bi-robot text-success me-2"></i> Not sure which department handles your complaint?</h5>
+                <p class="text-muted small mb-0">Our integrated Gemini AI Grievance Assistant automatically analyzes your description and suggests the right department before submission.</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a href="{{ url_for('citizen.submit_grievance') }}" class="btn btn-gov-gold">
+                    <i class="bi bi-magic me-1"></i> Use AI Assistant
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

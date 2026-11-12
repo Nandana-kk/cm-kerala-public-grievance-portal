@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us – CM Kerala Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 mb-2">PUBLIC ASSISTANCE CELL</span>
+                <h1 class="fw-bold text-dark">Get in Touch with Chief Minister's Office</h1>
+                <p class="text-muted lead">Have general questions regarding the portal or need technical assistance? Submit an enquiry below.</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Contact Form -->
+                <div class="col-lg-7">
+                    <div class="portal-card p-4">
+                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-chat-left-text me-2 text-success"></i> Public Enquiry Form</h5>
+                        <form method="POST" action="{{ url_for('contact') }}">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="name" value="{{ name or '' }}" placeholder="Enter your full name" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" placeholder="name@example.com" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subject <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="subject" name="subject" value="{{ subject or '' }}" placeholder="Brief subject of your query" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Enquiry Details <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="message" name="message" rows="5" placeholder="Please describe your enquiry or concern clearly..." required>{{ message or '' }}</textarea>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-gov-primary btn-lg">
+                                    <i class="bi bi-send me-2"></i> Submit Public Enquiry
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Contact Information & Office Details -->
+                <div class="col-lg-5">
+                    <div class="portal-card p-4 mb-4">
+                        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-geo-alt-fill me-2 text-primary"></i> Administrative Office</h5>
+                        <p class="text-muted small mb-3">
+                            <strong>Chief Minister's Office (CMO)</strong><br>
+                            Government Secretariat, North Block<br>
+                            Thiruvananthapuram, Kerala – 695001
+                        </p>
+                        <hr>
+                        <h6 class="fw-bold text-dark mb-2">Toll-Free Helpline</h6>
+                        <p class="fs-4 fw-bold text-success mb-1"><i class="bi bi-telephone-inbound-fill me-2"></i>1076</p>
+                        <p class="small text-muted">Operating hours: 9:00 AM – 5:30 PM (Working Days)</p>
+                        
+                        <hr>
+                        <h6 class="fw-bold text-dark mb-2">Email Contact</h6>
+                        <p class="small text-muted mb-0"><i class="bi bi-envelope me-2 text-primary"></i>cmo.grievance@demo.gov.in</p>
+                    </div>
+
+                    <div class="portal-card p-3 bg-light border">
+                        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-question-circle me-1 text-warning"></i> Need to file a complaint?</h6>
+                        <p class="small text-muted mb-2">If you have a grievance regarding roads, water, electricity, or health, please submit an official grievance rather than a general enquiry.</p>
+                        <a href="{{ url_for('citizen.submit_grievance') }}" class="btn btn-sm btn-gov-outline w-100">
+                            Go to Grievance Submission
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

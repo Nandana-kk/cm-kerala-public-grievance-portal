@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Frequently Asked Questions – CM Kerala Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 mb-2">HELP & SUPPORT</span>
+                <h1 class="fw-bold text-dark">Frequently Asked Questions (FAQ)</h1>
+                <p class="text-muted lead">Common queries regarding grievance submission, reference numbers, tracking, and escalation.</p>
+            </div>
+
+            <!-- FAQ Accordion -->
+            <div class="accordion shadow-sm" id="faqAccordion">
+                
+                <!-- Q1 -->
+                <div class="accordion-item mb-3 border rounded">
+                    <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            1. How do I submit a grievance through this portal?
+                        </button>
+                    </h2>
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            To submit a grievance, you must first register for a citizen account or sign in with your email and password. Click on <strong>"Submit Grievance"</strong> in the navigation bar or dashboard, select your Kerala district and grievance category, provide a detailed description of the problem, optionally upload photos or supporting documents, and click Submit.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="accordion-item mb-3 border rounded">
+                    <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            2. What is the Grievance Reference Number and why is it important?
+                        </button>
+                    </h2>
+                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            Every successfully submitted complaint generates a unique reference number formatted as <code>KL-2026-XXX-XXXX</code> (for example: <code>KL-2026-PWD-8401</code>). This number is your permanent tracking identifier. You can enter this reference number on the <strong>"Track Grievance"</strong> page without logging in to see the real-time status and historical timeline of administrative action.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="accordion-item mb-3 border rounded">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            3. How does the AI Grievance Assistant work?
+                        </button>
+                    </h2>
+                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            The portal features an integrated AI Assistant powered by the official Google Gemini API (model <code>gemini-2.5-flash</code>). When you enter your grievance description, the AI analyzes the text, suggests the most appropriate Kerala government department and category, assesses the urgency level (Low, Medium, or High), and produces an executive summary for the CMO review team. You can click <strong>"Apply Suggestions"</strong> to auto-fill the form.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="accordion-item mb-3 border rounded">
+                    <h2 class="accordion-header" id="headingFour">
+                        <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                            4. What are the 5 official grievance statuses?
+                        </button>
+                    </h2>
+                    <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            The portal uses exactly five official statuses:
+                            <ul class="mt-2 mb-0">
+                                <li><strong>Submitted:</strong> Grievance has been recorded and is awaiting administrative screening.</li>
+                                <li><strong>Under Review:</strong> CMO has examined the complaint and assigned it to the appropriate department.</li>
+                                <li><strong>In Progress:</strong> Department officer has initiated field inspection or remedial execution.</li>
+                                <li><strong>Resolved:</strong> Action Taken Report (ATR) has been verified and approved by the CMO.</li>
+                                <li><strong>Reopened:</strong> Case reopened due to citizen feedback or ground verification issues.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="accordion-item mb-3 border rounded">
+                    <h2 class="accordion-header" id="headingFive">
+                        <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                            5. Can I submit feedback after my complaint is resolved?
+                        </button>
+                    </h2>
+                    <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            Yes. Once a grievance is marked as <strong>Resolved</strong> by the CMO administrator, you can view the officer's Action Taken Report and submit a 1 to 5 star rating accompanied by feedback comments. This helps evaluate department performance and ensures service quality.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Q6 -->
+                <div class="accordion-item mb-3 border rounded">
+                    <h2 class="accordion-header" id="headingSix">
+                        <button class="accordion-button collapsed fw-bold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                            6. What formats and size are permitted for file uploads?
+                        </button>
+                    </h2>
+                    <div id="collapseSix" class="accordion-collapse collapse" aria-labelledby="headingSix" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body text-muted">
+                            You may upload supporting evidence in PNG, JPG, JPEG, PDF, DOC, or DOCX formats. The maximum permitted file size is 10 Megabytes (10 MB).
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Still Have Questions Box -->
+            <div class="text-center p-4 bg-light rounded-3 border mt-5">
+                <h5 class="fw-bold text-dark">Have more questions?</h5>
+                <p class="text-muted small">Our public assistance desk is ready to assist you.</p>
+                <a href="{{ url_for('contact') }}" class="btn btn-gov-primary">
+                    <i class="bi bi-envelope me-1"></i> Send Us an Enquiry
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

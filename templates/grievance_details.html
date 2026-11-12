@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}Grievance Management – {{ grievance.reference_number }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb / Back button -->
+    <div class="mb-3 d-flex justify-content-between align-items-center">
+        <div>
+            {% if is_officer_view or session.get('role') == 'officer' %}
+                <a href="{{ url_for('officer.dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Department Dashboard
+                </a>
+            {% else %}
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to CMO Dashboard
+                </a>
+            {% endif %}
+        </div>
+        <div>
+            <span class="badge bg-dark font-monospace fs-6">{{ grievance.reference_number }}</span>
+        </div>
+    </div>
+
+    <!-- MAIN GRIEVANCE HEADER CARD -->
+    <div class="portal-card shadow-sm mb-4">
+        <div class="portal-card-header green-header d-flex flex-wrap justify-content-between align-items-center">
+            <div>
+                <h4 class="fw-bold mb-1 text-white">{{ grievance.subject }}</h4>
+                <p class="small text-light opacity-75 mb-0">Submitted on: {{ grievance.created_at.strftime('%d-%b-%Y at %I:%M %p') if grievance.created_at else 'N/A' }}</p>
+            </div>
+            <div class="mt-2 mt-sm-0">
+                <span class="status-badge status-{{ grievance.status.replace(' ', '-') }} fs-6 me-2">
+                    {{ grievance.status }}
+                </span>
+                <span class="priority-badge priority-{{ grievance.priority }}">
+                    {{ grievance.priority }} Priority
+                </span>
+            </div>
+        </div>
+
+        <div class="portal-card-body p-4">
+            <!-- Details Grid -->
+            <div class="row g-3 mb-4 pb-3 border-bottom">
+                <div class="col-md-3 col-6">
+                    <span class="text-muted small d-block">District</span>
+                    <strong class="text-dark">{{ grievance.district }}</strong>
+                </div>
+                <div class="col-md-3 col-6">
+                    <span class="text-muted small d-block">Category</span>
+                    <strong class="text-dark">{{ grievance.category }}</strong>
+                </div>
+                <div class="col-md-3 col-6">
+                    <span class="text-muted small d-block">Assigned Department</span>
+                    <strong class="text-success">{{ grievance.department_name or 'Not Yet Assigned' }}</strong>
+                </div>
+                <div class="col-md-3 col-6">
+                    <span class="text-muted small d-block">Complainant Citizen</span>
+                    <strong class="text-dark">{{ grievance.citizen_name or 'Citizen' }}</strong>
+                    <div class="small text-muted">{{ grievance.citizen_mobile or '' }}</div>
+                </div>
+            </div>
+
+            <!-- Full Complaint Description -->
+            <div class="mb-4">
+                <h6 class="fw-bold text-dark">Citizen Complaint Description:</h6>
+                <div class="p-3 bg-light rounded border text-dark" style="white-space: pre-line;">{{ grievance.description }}</div>
+            </div>
+
+            <!-- AI TRIAGE RECOMMENDATIONS BOX -->
+            {% if grievance.ai_summary or grievance.ai_suggested_department %}
+                <div class="ai-assistant-box mb-4">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="ai-badge"><i class="bi bi-robot me-1"></i> AI Grievance Assistant Recommendation</span>
+                        <span class="badge bg-light text-dark border">Decision Support Only</span>
+                    </div>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">AI Suggested Dept:</small>
+                            <strong class="text-dark">{{ grievance.ai_suggested_department or 'N/A' }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">AI Suggested Category:</small>
+                            <strong class="text-dark">{{ grievance.ai_suggested_category or 'N/A' }}</strong>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">AI Suggested Priority:</small>
+                            <span class="badge bg-warning text-dark">{{ grievance.ai_suggested_priority or 'Medium' }}</span>
+                        </div>
+                    </div>
+                    {% if grievance.ai_summary %}
+                        <div class="mt-2 pt-2 border-top">
+                            <small class="text-muted d-block fw-bold">Executive Summary:</small>
+                            <span class="small text-dark">{{ grievance.ai_summary }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <!-- ATTACHMENTS LIST -->
+            {% if attachments %}
+                <div class="mb-4 p-3 bg-light rounded border">
+                    <h6 class="fw-bold text-dark mb-2"><i class="bi bi-paperclip me-1"></i> Supporting Documents / Evidence</h6>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for att in attachments %}
+                            <a href="{{ url_for('citizen.download_file', filename=att.file_name) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-file-earmark-arrow-down me-1"></i> {{ att.file_name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- EXISTING CMO REMARKS & OFFICER ACTION TAKEN REPORT -->
+            {% if grievance.cmo_remarks %}
+                <div class="alert alert-info border-info mb-3">
+                    <h6 class="fw-bold mb-1"><i class="bi bi-shield-check me-2"></i> CMO Administrative Directives</h6>
+                    <p class="small mb-0">{{ grievance.cmo_remarks }}</p>
+                </div>
+            {% endif %}
+
+            {% if grievance.action_taken_report %}
+                <div class="alert alert-success border-success mb-3">
+                    <h6 class="fw-bold mb-1"><i class="bi bi-clipboard-check me-2"></i> Current Department Action Taken Report (ATR)</h6>
+                    <p class="small mb-0" style="white-space: pre-line;">{{ grievance.action_taken_report }}</p>
+                </div>
+            {% endif %}
+
+            <!-- CITIZEN FEEDBACK IF RESOLVED -->
+            {% if feedback %}
+                <div class="p-3 rounded bg-light border border-success mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="fw-bold text-success mb-0"><i class="bi bi-star-fill text-warning me-1"></i> Citizen Rating: {{ feedback.rating }} / 5 Stars</h6>
+                        <small class="text-muted">{{ feedback.created_at.strftime('%d-%b-%Y') if feedback.created_at else '' }}</small>
+                    </div>
+                    <p class="small mb-0 text-dark">{{ feedback.comments or 'No written comments.' }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- WORKFLOW ACTION PANELS -->
+    <div class="row g-4 mb-4">
+
+        <!-- DEPARTMENT OFFICER ACTION PANEL -->
+        {% if is_officer_view or session.get('role') == 'officer' %}
+            <div class="col-lg-12">
+                <div class="portal-card shadow-sm border-primary">
+                    <div class="portal-card-header bg-primary text-white">
+                        <h5 class="mb-0 fw-bold"><i class="bi bi-clipboard-pulse me-2"></i> Department Officer Action & Report Submission</h5>
+                    </div>
+                    <div class="portal-card-body p-4">
+                        <form method="POST" action="{{ url_for('officer.submit_action_taken_report', grievance_id=grievance.grievance_id) }}" enctype="multipart/form-data">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Update Grievance Status:</label>
+                                    <select name="status" class="form-select" required>
+                                        <option value="In Progress" {% if grievance.status == 'In Progress' %}selected{% endif %}>In Progress – Field inspection / Work ongoing</option>
+                                        <option value="Under Review" {% if grievance.status == 'Under Review' %}selected{% endif %}>Under Review – Initial assessment</option>
+                                        <option value="Resolved" {% if grievance.status == 'Resolved' %}selected{% endif %}>Resolved – Corrective action completed</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8">
+                                    <label class="form-label">Supporting Verification Document / Photo (Optional):</label>
+                                    <input type="file" name="report_attachment" class="form-control" accept=".png,.jpg,.jpeg,.pdf,.doc,.docx">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Investigation Progress Remarks:</label>
+                                <input type="text" name="investigation_remarks" class="form-control" placeholder="e.g. Field inspection carried out on 12-Nov. Repair materials dispatched to site.">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Action Taken Report (ATR) Details:</label>
+                                <textarea name="action_taken_report" class="form-control" rows="4" placeholder="Detail the physical works executed, official orders issued, or corrective measures taken to resolve the grievance...">{{ grievance.action_taken_report or '' }}</textarea>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="submit" class="btn btn-gov-primary btn-lg">
+                                    <i class="bi bi-check2-circle me-1"></i> Submit Progress / ATR to CMO
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        <!-- CMO ADMINISTRATOR ACTION PANELS -->
+        {% elif session.get('role') == 'admin' %}
+            
+            <!-- 1. Assign Department & Officer -->
+            <div class="col-lg-6">
+                <div class="portal-card shadow-sm h-100">
+                    <div class="portal-card-header green-header">
+                        <h5 class="mb-0 text-white"><i class="bi bi-arrow-right-circle me-2"></i> Assign to Department</h5>
+                    </div>
+                    <div class="portal-card-body p-4">
+                        <form method="POST" action="{{ url_for('admin.assign_department', grievance_id=grievance.grievance_id) }}">
+                            <div class="mb-3">
+                                <label class="form-label">Select Department <span class="text-danger">*</span></label>
+                                <select name="department_id" class="form-select" required>
+                                    <option value="">-- Choose Department --</option>
+                                    {% for d in departments %}
+                                        <option value="{{ d.department_id }}" {% if grievance.assigned_department == d.department_id %}selected{% endif %}>
+                                            {{ d.department_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Assign Specific Officer (Optional):</label>
+                                <select name="officer_id" class="form-select">
+                                    <option value="">-- Department Head / General Allocation --</option>
+                                    {% for off in officers %}
+                                        <option value="{{ off.user_id }}" {% if current_assignment and current_assignment.officer_id == off.user_id %}selected{% endif %}>
+                                            {{ off.name }} ({{ off.email }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">CMO Directives / Instructions:</label>
+                                <textarea name="cmo_remarks" class="form-control" rows="3" placeholder="Provide specific instructions, inspection timeline, or focus areas for the department...">{{ grievance.cmo_remarks or '' }}</textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-gov-primary w-100">
+                                <i class="bi bi-send-check me-1"></i> Forward Grievance & Direct Action
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Administrative Status Management & Escalation -->
+            <div class="col-lg-6">
+                <div class="portal-card shadow-sm h-100">
+                    <div class="portal-card-header" style="background-color: var(--secondary-navy); color: #fff;">
+                        <h5 class="mb-0 text-white"><i class="bi bi-sliders me-2"></i> Administrative Review & Status</h5>
+                    </div>
+                    <div class="portal-card-body p-4">
+                        <form method="POST" action="{{ url_for('admin.update_status', grievance_id=grievance.grievance_id) }}">
+                            <div class="row g-2 mb-3">
+                                <div class="col-6">
+                                    <label class="form-label">Grievance Status:</label>
+                                    <select name="status" class="form-select" required>
+                                        <option value="Submitted" {% if grievance.status == 'Submitted' %}selected{% endif %}>Submitted</option>
+                                        <option value="Under Review" {% if grievance.status == 'Under Review' %}selected{% endif %}>Under Review</option>
+                                        <option value="In Progress" {% if grievance.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                                        <option value="Resolved" {% if grievance.status == 'Resolved' %}selected{% endif %}>Resolved (Approve ATR)</option>
+                                        <option value="Reopened" {% if grievance.status == 'Reopened' %}selected{% endif %}>Reopened (Disputed / Incomplete)</option>
+                                    </select>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">Priority Level:</label>
+                                    <select name="priority" class="form-select" required>
+                                        <option value="Low" {% if grievance.priority == 'Low' %}selected{% endif %}>Low</option>
+                                        <option value="Medium" {% if grievance.priority == 'Medium' %}selected{% endif %}>Medium</option>
+                                        <option value="High" {% if grievance.priority == 'High' %}selected{% endif %}>High</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 form-check p-3 bg-light rounded border">
+                                <input class="form-check-input ms-0 me-2" type="checkbox" name="is_escalation" value="true" id="escalateCheck">
+                                <label class="form-check-label fw-bold text-danger" for="escalateCheck">
+                                    <i class="bi bi-lightning-fill me-1"></i> Escalate Grievance (Sets Priority to HIGH)
+                                </label>
+                                <div class="form-text mt-1">Check to flag as overdue or critical emergency for urgent intervention.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">CMO Administrative Remarks:</label>
+                                <textarea name="cmo_remarks" class="form-control" rows="2" placeholder="Audit findings, reasons for reopening, or closure approval notes..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-gov-secondary w-100">
+                                <i class="bi bi-save me-1"></i> Update Status & Save Audit Log
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+    </div>
+
+    <!-- STATUS TRANSITION LIFECYCLE HISTORY -->
+    <div class="portal-card shadow-sm p-4">
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-clock-history me-2 text-primary"></i> Complete Status History Log</h5>
+        {% if history %}
+            <ul class="timeline">
+                {% for h in history %}
+                    <li class="timeline-item">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div>
+                                    <span class="status-badge status-{{ h.new_status.replace(' ', '-') }} me-2">
+                                        {{ h.new_status }}
+                                    </span>
+                                    {% if h.previous_status %}
+                                        <small class="text-muted">(Previous: {{ h.previous_status }})</small>
+                                    {% endif %}
+                                </div>
+                                <span class="small text-muted">
+                                    {{ h.changed_at.strftime('%d-%b-%Y at %I:%M %p') if h.changed_at else '' }}
+                                </span>
+                            </div>
+                            <p class="text-dark small mb-1">{{ h.remarks }}</p>
+                            <span class="badge bg-light text-secondary border" style="font-size: 0.72rem;">
+                                Logged by: {{ h.actor_name }} ({{ h.actor_role|capitalize }})
+                            </span>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-muted small mb-0">No historical status records.</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

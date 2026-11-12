@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}CMO Admin Dashboard – CM Kerala Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-lg-4 py-4">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <div>
+            <h2 class="fw-bold text-dark mb-1"><i class="bi bi-shield-lock-fill text-success me-2"></i> Chief Minister's Office (CMO) Administration</h2>
+            <p class="text-muted small mb-0">Central Grievance Monitoring, Department Triage, and Redressal Supervision</p>
+        </div>
+        <div class="mt-3 mt-sm-0">
+            <span class="badge bg-success p-2 fs-6">
+                <i class="bi bi-person-check-fill me-1"></i> Authorized Administrator: {{ session.get('name') }}
+            </span>
+        </div>
+    </div>
+
+    <!-- METRICS SUMMARY CARDS (INTERACTIVE) -->
+    <div class="row g-3 mb-4">
+        <div class="col-xl-3 col-sm-6">
+            <a href="{{ url_for('admin.dashboard') }}" class="text-decoration-none d-block h-100" title="Click to view all grievances">
+                <div class="stat-card h-100">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-number">{{ total_count }}</div>
+                            <div class="stat-label">Total Grievances</div>
+                        </div>
+                        <div class="stat-icon text-primary"><i class="bi bi-inbox-fill"></i></div>
+                    </div>
+                    <div class="mt-2 pt-1 border-top small text-primary fw-semibold d-flex align-items-center justify-content-between">
+                        <span>Show all</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <a href="{{ url_for('admin.dashboard', status='In Progress') }}" class="text-decoration-none d-block h-100" title="Click to view in-progress complaints">
+                <div class="stat-card h-100" style="border-top-color: #d97706;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-number text-warning">{{ pending_count }}</div>
+                            <div class="stat-label">Pending / In Progress</div>
+                        </div>
+                        <div class="stat-icon text-warning"><i class="bi bi-hourglass-split"></i></div>
+                    </div>
+                    <div class="mt-2 pt-1 border-top small text-warning fw-semibold d-flex align-items-center justify-content-between">
+                        <span>Show in progress</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <a href="{{ url_for('admin.dashboard', status='Resolved') }}" class="text-decoration-none d-block h-100" title="Click to view resolved complaints">
+                <div class="stat-card h-100" style="border-top-color: #16a34a;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-number text-success">{{ resolved_count }}</div>
+                            <div class="stat-label">Resolved Complaints</div>
+                        </div>
+                        <div class="stat-icon text-success"><i class="bi bi-check-circle-fill"></i></div>
+                    </div>
+                    <div class="mt-2 pt-1 border-top small text-success fw-semibold d-flex align-items-center justify-content-between">
+                        <span>Show resolved</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <a href="{{ url_for('admin.dashboard', priority='High') }}" class="text-decoration-none d-block h-100" title="Click to view high priority complaints">
+                <div class="stat-card h-100" style="border-top-color: #dc2626;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="stat-number text-danger">{{ overdue_count }}</div>
+                            <div class="stat-label">Overdue / Urgent Attention</div>
+                        </div>
+                        <div class="stat-icon text-danger"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                    </div>
+                    <div class="mt-2 pt-1 border-top small text-danger fw-semibold d-flex align-items-center justify-content-between">
+                        <span>Show high priority</span>
+                        <i class="bi bi-arrow-right"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHART.JS VISUALIZATION ROW -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-4">
+            <div class="portal-card h-100 p-3">
+                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-pie-chart-fill text-primary me-2"></i> Status Distribution</h6>
+                <div style="height: 240px; position: relative;">
+                    <canvas id="chart-status"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="portal-card h-100 p-3">
+                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-bar-chart-fill text-success me-2"></i> District-wise Distribution</h6>
+                <div style="height: 240px; position: relative;">
+                    <canvas id="chart-district"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="portal-card h-100 p-3">
+                <h6 class="fw-bold text-dark mb-3"><i class="bi bi-diagram-2-fill text-dark me-2"></i> Department-wise Routing</h6>
+                <div style="height: 240px; position: relative;">
+                    <canvas id="chart-department"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH & FILTER CONTROLS -->
+    <div class="portal-card p-3 mb-4 bg-white">
+        <form method="GET" action="{{ url_for('admin.dashboard') }}" class="row g-2 align-items-end">
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label small fw-bold">Search Keywords / Ref No:</label>
+                <input type="text" name="search" class="form-control form-control-sm" placeholder="Ref No, subject, citizen..." value="{{ search_query }}">
+            </div>
+            <div class="col-lg-2 col-md-3 col-6">
+                <label class="form-label small fw-bold">District:</label>
+                <select name="district" class="form-select form-select-sm">
+                    <option value="">All Districts</option>
+                    {% for d in districts %}
+                        <option value="{{ d }}" {% if selected_district == d %}selected{% endif %}>{{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-3 col-6">
+                <label class="form-label small fw-bold">Category:</label>
+                <select name="category" class="form-select form-select-sm">
+                    <option value="">All Categories</option>
+                    {% for c in categories %}
+                        <option value="{{ c }}" {% if selected_category == c %}selected{% endif %}>{{ c }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-3 col-6">
+                <label class="form-label small fw-bold">Priority:</label>
+                <select name="priority" class="form-select form-select-sm">
+                    <option value="">All Priorities</option>
+                    <option value="High" {% if selected_priority == 'High' %}selected{% endif %}>High Priority</option>
+                    <option value="Medium" {% if selected_priority == 'Medium' %}selected{% endif %}>Medium Priority</option>
+                    <option value="Low" {% if selected_priority == 'Low' %}selected{% endif %}>Low Priority</option>
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-3 col-6">
+                <label class="form-label small fw-bold">Status:</label>
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">All Statuses</option>
+                    <option value="Submitted" {% if selected_status == 'Submitted' %}selected{% endif %}>Submitted</option>
+                    <option value="Under Review" {% if selected_status == 'Under Review' %}selected{% endif %}>Under Review</option>
+                    <option value="In Progress" {% if selected_status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                    <option value="Resolved" {% if selected_status == 'Resolved' %}selected{% endif %}>Resolved</option>
+                    <option value="Reopened" {% if selected_status == 'Reopened' %}selected{% endif %}>Reopened</option>
+                </select>
+            </div>
+            <div class="col-lg-1 col-md-6 col-12 d-flex gap-1">
+                <button type="submit" class="btn btn-sm btn-gov-primary w-100">
+                    <i class="bi bi-funnel"></i> Filter
+                </button>
+                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-outline-secondary" title="Reset Filters">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- GRIEVANCES MANAGEMENT TABLE -->
+    <div class="portal-card">
+        <div class="portal-card-header d-flex justify-content-between align-items-center">
+            <span class="fw-bold"><i class="bi bi-table me-2 text-primary"></i> Grievance Records</span>
+            <span class="badge bg-light text-dark border">{{ grievances|length }} Record(s)</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Ref Number</th>
+                        <th>Citizen</th>
+                        <th>District</th>
+                        <th>Subject & Category</th>
+                        <th>Department</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Submitted On</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if grievances %}
+                        {% for g in grievances %}
+                            <tr>
+                                <td>
+                                    <strong class="text-primary font-monospace">{{ g.reference_number }}</strong>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">{{ g.citizen_name or 'Citizen' }}</div>
+                                    <small class="text-muted">{{ g.citizen_mobile or '' }}</small>
+                                </td>
+                                <td>{{ g.district }}</td>
+                                <td style="max-width: 260px;">
+                                    <div class="fw-bold text-truncate" title="{{ g.subject }}">{{ g.subject }}</div>
+                                    <small class="text-muted d-block text-truncate">{{ g.category }}</small>
+                                </td>
+                                <td>
+                                    <span class="small fw-semibold text-secondary">
+                                        {{ g.department_name or 'Not Assigned' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="priority-badge priority-{{ g.priority }}">{{ g.priority }}</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ g.status.replace(' ', '-') }}">{{ g.status }}</span>
+                                </td>
+                                <td class="small text-muted">
+                                    {{ g.created_at.strftime('%d-%b-%Y') if g.created_at else '' }}
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ url_for('admin.grievance_details', grievance_id=g.grievance_id) }}" class="btn btn-sm btn-gov-primary">
+                                        <i class="bi bi-pencil-square me-1"></i> Manage
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                <i class="bi bi-search fs-2 d-block mb-2"></i>
+                                <h6>No grievances match the specified search or filter criteria.</h6>
+                                <a href="{{ url_for('admin.dashboard') }}" class="btn btn-sm btn-outline-secondary mt-2">Clear Filters</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

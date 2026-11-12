@@ -1,0 +1,310 @@
+{% extends "base.html" %}
+
+{% block title %}Track Grievance – CM Kerala Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            <!-- TRACKING SEARCH BOX -->
+            <div class="portal-card p-4 mb-4 shadow-sm">
+                <div class="text-center mb-4">
+                    <span class="badge bg-primary bg-opacity-10 text-primary fw-bold px-3 py-2 mb-2">PUBLIC GRIEVANCE TRACKING</span>
+                    <h3 class="fw-bold text-dark mb-1">Track Grievance Redressal Status</h3>
+                    <p class="text-muted small">Enter your unique reference number to inspect real-time progress and departmental updates.</p>
+                </div>
+
+                <form method="GET" action="{{ url_for('citizen.track') }}" class="row g-2 justify-content-center">
+                    <div class="col-md-7">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-white"><i class="bi bi-search text-success"></i></span>
+                            <input type="text" name="ref" class="form-control" placeholder="Enter Reference Number (e.g. KL-2026-PWD-8401)" value="{{ ref or '' }}" required autofocus>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-gov-primary btn-lg w-100">
+                            Track Status
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- GRIEVANCE DETAILS & TIMELINE (Shown when grievance found) -->
+            {% if grievance %}
+                <div class="portal-card shadow-sm mb-4">
+                    <div class="portal-card-header green-header d-flex flex-wrap justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-light text-dark fw-bold mb-1">Reference No.</span>
+                            <h4 class="font-monospace fw-bold mb-0 text-white">{{ grievance.reference_number }}</h4>
+                        </div>
+                        <div class="mt-2 mt-sm-0 text-sm-end">
+                            <span class="status-badge status-{{ grievance.status.replace(' ', '-') }} fs-6">
+                                {{ grievance.status }}
+                            </span>
+                            <span class="priority-badge priority-{{ grievance.priority }} ms-2">
+                                Priority: {{ grievance.priority }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="portal-card-body p-4">
+                        <!-- Grievance Core Details -->
+                        <div class="row g-3 mb-4 pb-3 border-bottom">
+                            <div class="col-md-4">
+                                <span class="text-muted small d-block">District</span>
+                                <strong class="text-dark">{{ grievance.district }}</strong>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="text-muted small d-block">Category</span>
+                                <strong class="text-dark">{{ grievance.category }}</strong>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="text-muted small d-block">Submission Date</span>
+                                <strong class="text-dark">{{ grievance.created_at.strftime('%d-%b-%Y at %I:%M %p') if grievance.created_at else 'N/A' }}</strong>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-muted small d-block">Assigned Department</span>
+                                <strong class="text-success fs-6">
+                                    {{ grievance.department_name or 'Pending Department Assignment by CMO' }}
+                                </strong>
+                            </div>
+                            <div class="col-md-6">
+                                <span class="text-muted small d-block">Complainant Name</span>
+                                <strong class="text-dark">{{ grievance.citizen_name or 'Registered Citizen' }}</strong>
+                            </div>
+                        </div>
+
+                        <!-- Subject & Description -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold text-dark">{{ grievance.subject }}</h5>
+                            <p class="text-muted mb-0" style="white-space: pre-line;">{{ grievance.description }}</p>
+                        </div>
+
+                        <!-- AI Executive Summary if available -->
+                        {% if grievance.ai_summary %}
+                            <div class="ai-assistant-box mb-4">
+                                <div class="d-flex align-items-center mb-1">
+                                    <span class="ai-badge me-2"><i class="bi bi-robot me-1"></i> AI Triage Summary</span>
+                                    <small class="text-muted">Generated for Chief Minister's Office review</small>
+                                </div>
+                                <p class="small text-dark mb-0">{{ grievance.ai_summary }}</p>
+                            </div>
+                        {% endif %}
+
+                        <!-- Attachments if any -->
+                        {% if attachments %}
+                            <div class="mb-4 p-3 bg-light rounded border">
+                                <h6 class="fw-bold text-dark mb-2"><i class="bi bi-paperclip me-1"></i> Supporting Evidence / Uploaded Documents</h6>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for att in attachments %}
+                                        <a href="{{ url_for('citizen.download_file', filename=att.file_name) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-file-earmark-arrow-down me-1"></i> {{ att.file_name }}
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <!-- CMO Remarks -->
+                        {% if grievance.cmo_remarks %}
+                            <div class="alert alert-info border-info mb-4">
+                                <h6 class="fw-bold mb-1"><i class="bi bi-shield-check me-2"></i> Chief Minister's Office (CMO) Directives</h6>
+                                <p class="mb-0 small">{{ grievance.cmo_remarks }}</p>
+                            </div>
+                        {% endif %}
+
+                        <!-- Officer Action Taken Report -->
+                        {% if grievance.action_taken_report %}
+                            <div class="alert alert-success border-success mb-4">
+                                <h6 class="fw-bold mb-1 text-success"><i class="bi bi-clipboard-check me-2"></i> Department Action Taken Report (ATR)</h6>
+                                <p class="mb-0 small" style="white-space: pre-line;">{{ grievance.action_taken_report }}</p>
+                            </div>
+                        {% endif %}
+
+                        <!-- STATUS TRANSITION HISTORY TIMELINE -->
+                        <div class="mt-4 pt-3 border-top">
+                            <h5 class="fw-bold text-dark mb-3"><i class="bi bi-clock-history me-2 text-primary"></i> Grievance Status Lifecycle History</h5>
+                            
+                            {% if history %}
+                                <ul class="timeline">
+                                    {% for h in history %}
+                                        <li class="timeline-item">
+                                            <div class="timeline-marker"></div>
+                                            <div class="timeline-content">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <div>
+                                                        <span class="status-badge status-{{ h.new_status.replace(' ', '-') }} me-2">
+                                                            {{ h.new_status }}
+                                                        </span>
+                                                        {% if h.previous_status %}
+                                                            <small class="text-muted">(Previous: {{ h.previous_status }})</small>
+                                                        {% endif %}
+                                                    </div>
+                                                    <span class="small text-muted">
+                                                        {{ h.changed_at.strftime('%d-%b-%Y %I:%M %p') if h.changed_at else '' }}
+                                                    </span>
+                                                </div>
+                                                <p class="text-dark small mb-1">{{ h.remarks }}</p>
+                                                <span class="badge bg-light text-secondary border" style="font-size: 0.72rem;">
+                                                    Action by: {{ h.actor_name }} ({{ h.actor_role|capitalize }})
+                                                </span>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted small">No status transitions logged yet.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- CITIZEN FEEDBACK SECTION (For Resolved Grievances) -->
+                        {% if grievance.status == 'Resolved' %}
+                            <div class="mt-4 p-4 rounded bg-light border border-success">
+                                <h5 class="fw-bold text-success mb-2"><i class="bi bi-star-fill text-warning me-2"></i> Citizen Resolution Feedback</h5>
+                                
+                                {% if feedback %}
+                                    <div class="p-3 bg-white rounded border">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <div class="text-warning fs-5 me-2">
+                                                {% for i in range(feedback.rating) %}★{% endfor %}
+                                                {% for i in range(5 - feedback.rating) %}☆{% endfor %}
+                                            </div>
+                                            <span class="badge bg-success">{{ feedback.rating }} / 5 Stars</span>
+                                            <small class="text-muted ms-auto">Submitted: {{ feedback.created_at.strftime('%d-%b-%Y') if feedback.created_at else '' }}</small>
+                                        </div>
+                                        <p class="mb-0 text-dark small">{{ feedback.comments or 'No written comments provided.' }}</p>
+                                    </div>
+                                {% elif session.get('user_id') and session.get('role') == 'citizen' and session.get('user_id') == grievance.citizen_id %}
+                                    <p class="text-muted small">Your complaint has been marked as resolved. Please rate the quality and timeliness of the administrative resolution.</p>
+                                    <form method="POST" action="{{ url_for('citizen.submit_feedback', grievance_id=grievance.grievance_id) }}">
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Satisfaction Rating (1 to 5 Stars):</label>
+                                            <select class="form-select form-select-sm" name="rating" style="max-width: 200px;" required>
+                                                <option value="5" selected>★★★★★ - 5 Stars (Excellent)</option>
+                                                <option value="4">★★★★☆ - 4 Stars (Good)</option>
+                                                <option value="3">★★★☆☆ - 3 Stars (Satisfactory)</option>
+                                                <option value="2">★★☆☆☆ - 2 Stars (Needs Improvement)</option>
+                                                <option value="1">★☆☆☆☆ - 1 Star (Poor)</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label small fw-bold">Comments & Feedback:</label>
+                                            <textarea class="form-control form-control-sm" name="comments" rows="3" placeholder="Share your experience regarding the ground resolution..."></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-sm btn-gov-primary">
+                                            <i class="bi bi-send me-1"></i> Submit Feedback
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <p class="text-muted small mb-0">The citizen may log in to submit satisfaction rating and review comments for this resolved complaint.</p>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- PUBLIC GRIEVANCE RECORDS LISTING TABLE -->
+            {% if grievances is defined and grievances is not none %}
+                <div class="portal-card shadow-sm mt-4">
+                    <div class="portal-card-header d-flex flex-wrap justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="fw-bold fs-6">
+                                <i class="bi bi-card-checklist me-2 text-success"></i>
+                                {% if selected_status == 'Resolved' %}
+                                    Successfully Resolved Grievances
+                                {% elif selected_status == 'In Progress' %}
+                                    Action In Progress Grievances
+                                {% elif selected_status and selected_status != 'all' %}
+                                    {{ selected_status }} Grievances
+                                {% else %}
+                                    All Public Grievance Records
+                                {% endif %}
+                            </span>
+                            <span class="badge bg-light text-dark border">{{ grievances|length }} Record(s)</span>
+                        </div>
+
+                        <!-- Status Filter Tabs -->
+                        <div class="d-flex gap-1 mt-2 mt-sm-0">
+                            <a href="{{ url_for('citizen.track', status='all') }}" class="btn btn-sm {% if not selected_status or selected_status == 'all' %}btn-gov-primary{% else %}btn-outline-secondary{% endif %}">
+                                All
+                            </a>
+                            <a href="{{ url_for('citizen.track', status='In Progress') }}" class="btn btn-sm {% if selected_status == 'In Progress' %}btn-gov-secondary text-white{% else %}btn-outline-secondary{% endif %}">
+                                In Progress
+                            </a>
+                            <a href="{{ url_for('citizen.track', status='Resolved') }}" class="btn btn-sm {% if selected_status == 'Resolved' %}btn-success text-white{% else %}btn-outline-secondary{% endif %}">
+                                Resolved
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Reference Number</th>
+                                    <th>Subject & Category</th>
+                                    <th>District</th>
+                                    <th>Assigned Department</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>Submitted On</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if grievances %}
+                                    {% for g in grievances %}
+                                        <tr>
+                                            <td>
+                                                <a href="{{ url_for('citizen.track', ref=g.reference_number) }}" class="font-monospace fw-bold text-primary text-decoration-none" title="Track this reference number">
+                                                    {{ g.reference_number }}
+                                                </a>
+                                            </td>
+                                            <td style="max-width: 280px;">
+                                                <div class="fw-bold text-dark text-truncate" title="{{ g.subject }}">{{ g.subject }}</div>
+                                                <small class="text-muted d-block text-truncate">{{ g.category }}</small>
+                                            </td>
+                                            <td>{{ g.district }}</td>
+                                            <td>
+                                                <small class="text-secondary fw-semibold">
+                                                    {{ g.department_name or 'Pending Assignment' }}
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <span class="priority-badge priority-{{ g.priority }}">{{ g.priority }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="status-badge status-{{ g.status.replace(' ', '-') }}">{{ g.status }}</span>
+                                            </td>
+                                            <td class="small text-muted">
+                                                {{ g.created_at.strftime('%d-%b-%Y') if g.created_at else '' }}
+                                            </td>
+                                            <td class="text-end">
+                                                <a href="{{ url_for('citizen.track', ref=g.reference_number) }}" class="btn btn-sm btn-gov-outline">
+                                                    <i class="bi bi-eye me-1"></i> Track
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4 text-muted">
+                                            <i class="bi bi-inbox fs-3 d-block mb-2 text-secondary opacity-50"></i>
+                                            <h6>No grievances found with status: "{{ selected_status }}"</h6>
+                                            <a href="{{ url_for('citizen.track', status='all') }}" class="btn btn-sm btn-gov-primary mt-2">View All Grievances</a>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

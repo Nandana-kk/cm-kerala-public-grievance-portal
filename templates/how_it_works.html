@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}How It Works – CM Kerala Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 mb-2">END-TO-END WORKFLOW</span>
+                <h1 class="fw-bold text-dark">The Grievance Redressal Lifecycle</h1>
+                <p class="text-muted lead">An 8-stage transparent journey from citizen submission to final closure.</p>
+            </div>
+
+            <!-- Workflow Visual Overview -->
+            <div class="portal-card p-4 mb-5 bg-white">
+                <h5 class="fw-bold text-dark mb-4 text-center"><i class="bi bi-diagram-3 me-2 text-success"></i> Official 8-Stage Procedure</h5>
+                
+                <div class="row g-4">
+                    <!-- Stage 1 -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start p-3 bg-light rounded-3 border">
+                            <span class="badge bg-success rounded-circle me-3 p-3 fs-6">1</span>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Citizen Submits Grievance</h6>
+                                <p class="text-muted small mb-0">Citizen fills the online grievance form, specifying district, category, description, and optional supporting photos/documents. Gemini AI analyzes the text to recommend department and priority.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 2 -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start p-3 bg-light rounded-3 border">
+                            <span class="badge bg-success rounded-circle me-3 p-3 fs-6">2</span>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">System Generates Unique Reference ID</h6>
+                                <p class="text-muted small mb-0">The portal generates a unique tracking code (e.g., <code>KL-2026-PWD-8401</code>) stored securely in MySQL. Status is set to <strong>Submitted</strong>, and an initial history log entry is created.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 3 -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start p-3 bg-light rounded-3 border">
+                            <span class="badge bg-success rounded-circle me-3 p-3 fs-6">3</span>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">CMO Reviews Grievance</h6>
+                                <p class="text-muted small mb-0">Chief Minister's Office administrative officers examine the complaint, verify authenticity, review AI-generated summaries, and determine priority (Low, Medium, or High).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 4 -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start p-3 bg-light rounded-3 border">
+                            <span class="badge bg-success rounded-circle me-3 p-3 fs-6">4</span>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">CMO Assigns Department & Officer</h6>
+                                <p class="text-muted small mb-0">The grievance is routed to the competent government department (e.g. PWD, Health, KSEB). Status transitions to <strong>Under Review</strong>, and the assignment is permanently logged in MySQL.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 5 -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start p-3 bg-light rounded-3 border">
+                            <span class="badge bg-success rounded-circle me-3 p-3 fs-6">5</span>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Department Officer Investigates</h6>
+                                <p class="text-muted small mb-0">The assigned department officer accesses the complaint from their isolated departmental dashboard, begins ground inspection, adds field notes, and marks status as <strong>In Progress</strong>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 6 -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start p-3 bg-light rounded-3 border">
+                            <span class="badge bg-success rounded-circle me-3 p-3 fs-6">6</span>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Officer Submits Action Taken Report (ATR)</h6>
+                                <p class="text-muted small mb-0">Upon completing physical works or administrative remedies, the officer compiles a comprehensive Action Taken Report, uploads verification photos, and submits it to the CMO.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 7 -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start p-3 bg-light rounded-3 border">
+                            <span class="badge bg-success rounded-circle me-3 p-3 fs-6">7</span>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">CMO Reviews and Approves Resolution</h6>
+                                <p class="text-muted small mb-0">The CMO administrator audits the department's ATR. If satisfactory, the administrator marks the grievance as <strong>Resolved</strong>. If inadequate, the complaint is escalated or reopened.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 8 -->
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-start p-3 bg-light rounded-3 border">
+                            <span class="badge bg-success rounded-circle me-3 p-3 fs-6">8</span>
+                            <div>
+                                <h6 class="fw-bold text-dark mb-1">Citizen Receives Updates & Feedback</h6>
+                                <p class="text-muted small mb-0">The citizen tracks the resolution on the portal, reads the officer's report, and provides a 1-to-5 star rating with comments. If unsatisfied, the citizen can dispute for reopening.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- The Five Official Grievance Statuses -->
+            <div class="portal-card p-4 mb-4">
+                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-tags me-2 text-primary"></i> The Five Grievance Statuses Explained</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 25%;">Status</th>
+                                <th style="width: 20%;">Actor Responsible</th>
+                                <th>Definition</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="status-badge status-Submitted">Submitted</span></td>
+                                <td>Citizen</td>
+                                <td>Grievance successfully lodged online. Awaiting initial administrative screening by CMO.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="status-badge status-Under-Review">Under Review</span></td>
+                                <td>CMO Admin</td>
+                                <td>CMO has reviewed the complaint, assigned it to the appropriate department, and issued directives.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="status-badge status-In-Progress">In Progress</span></td>
+                                <td>Department Officer</td>
+                                <td>Field investigation or remedial engineering/administrative work is actively underway.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="status-badge status-Resolved">Resolved</span></td>
+                                <td>CMO Admin</td>
+                                <td>Action Taken Report verified and approved by CMO. The grievance is formally closed.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="status-badge status-Reopened">Reopened</span></td>
+                                <td>CMO Admin / Citizen</td>
+                                <td>Resolution contested by citizen or flagged for reinvestigation due to recurring ground issues.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Call to action -->
+            <div class="text-center mt-5">
+                <a href="{{ url_for('citizen.submit_grievance') }}" class="btn btn-gov-primary btn-lg me-2">
+                    <i class="bi bi-file-earmark-plus me-1"></i> Submit Grievance Now
+                </a>
+                <a href="{{ url_for('citizen.track') }}" class="btn btn-gov-outline btn-lg">
+                    <i class="bi bi-search me-1"></i> Track Existing Grievance
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

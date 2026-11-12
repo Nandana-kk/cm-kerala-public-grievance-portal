@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}About Us – CM Kerala Grievance Redressal Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 mb-2">ABOUT THE INITIATIVE</span>
+                <h1 class="fw-bold text-dark">Chief Minister's Public Grievance Redressal Portal</h1>
+                <p class="text-muted lead">Empowering citizens through transparent, accountable, and technology-driven governance.</p>
+            </div>
+
+            <!-- Purpose Card -->
+            <div class="portal-card mb-4">
+                <div class="portal-card-header green-header">
+                    <h5 class="mb-0 text-white"><i class="bi bi-bullseye me-2"></i> Purpose & Background</h5>
+                </div>
+                <div class="portal-card-body">
+                    <p>The Chief Minister's Public Grievance Redressal Portal is conceived as a comprehensive single-window grievance platform. In traditional administrative setups, citizens often navigate fragmented departmental offices without clear visibility into complaint status, responsible officials, or resolution timeframes.</p>
+                    <p class="mb-0">This portal directly connects every citizen with the Chief Minister's Office (CMO), bridging geographical and bureaucratic barriers. By harnessing modern web technologies and AI-assisted triage, the portal establishes verifiable accountability, structured workflows, and real-time status tracking for public problems across Kerala.</p>
+                </div>
+            </div>
+
+            <!-- Vision and Mission Grid -->
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <div class="portal-card h-100 p-4 border-top border-4 border-primary">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="emblem-icon me-3 bg-primary text-white">
+                                <i class="bi bi-eye"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark mb-0">Our Vision</h4>
+                        </div>
+                        <p class="text-muted">To realize a citizen-centric, transparent, and technology-enabled governance model where every public grievance receives prompt, impartial, and measurable administrative redressal, fostering trust between the people and their government.</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="portal-card h-100 p-4 border-top border-4 border-success">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="emblem-icon me-3 bg-success text-white">
+                                <i class="bi bi-compass"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark mb-0">Our Mission</h4>
+                        </div>
+                        <p class="text-muted">To streamline grievance intake, eliminate unnecessary delays, enforce strict departmental accountability, leverage artificial intelligence for intelligent categorization, and provide citizens complete visibility throughout the redressal lifecycle.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Objectives -->
+            <div class="portal-card mb-4">
+                <div class="portal-card-header">
+                    <h5 class="mb-0 text-dark"><i class="bi bi-check2-circle me-2 text-success"></i> Core Objectives</h5>
+                </div>
+                <div class="portal-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-check-circle-fill text-success fs-5 me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1">Single-Window Access</h6>
+                                    <p class="small text-muted mb-0">One centralized portal for submitting issues across roads, water, health, education, electricity, and local amenities.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-check-circle-fill text-success fs-5 me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1">Time-Bound Redressal</h6>
+                                    <p class="small text-muted mb-0">Establish priority assessment, proactive overdue tracking, and automated escalation to prevent unattended complaints.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-check-circle-fill text-success fs-5 me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1">AI-Assisted Processing</h6>
+                                    <p class="small text-muted mb-0">Integrate Google Gemini LLM to suggest departments, assess urgency, summarize issues, and flag duplicate concerns.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-start">
+                                <i class="bi bi-check-circle-fill text-success fs-5 me-3 mt-1"></i>
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1">Citizen Feedback Loop</h6>
+                                    <p class="small text-muted mb-0">Allow citizens to rate resolution quality and reopen complaints when the ground reality remains unresolved.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Disclaimer Notice -->
+            <div class="alert alert-warning border border-warning shadow-sm">
+                <h6 class="fw-bold mb-1"><i class="bi bi-info-circle me-2"></i> Prototype Notice</h6>
+                <p class="small mb-0">{{ DISCLAIMER }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
